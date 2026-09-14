@@ -7,7 +7,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const app = express();
+
 const PORTA = process.env.PORT || 3000;
+
 
 // ======================================================
 // CONFIGURAÇÕES
@@ -32,11 +34,13 @@ app.use(
     )
 );
 
+
 // ======================================================
 // FUNÇÃO PARA NORMALIZAR TEXTO
 // ======================================================
 
 function normalizarTexto(texto) {
+
     return texto
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
@@ -46,17 +50,22 @@ function normalizarTexto(texto) {
         .trim();
 }
 
+
 // ======================================================
 // ENCONTRAR UNIDADE CURRICULAR NO PDF
 // ======================================================
 
-function encontrarUnidadeCurricular(textoPDF, unidade) {
+function encontrarUnidadeCurricular(
+    textoPDF,
+    unidade
+) {
 
     const textoNormalizado =
         normalizarTexto(textoPDF);
 
     const unidadeNormalizada =
         normalizarTexto(unidade);
+
 
     // --------------------------------------------------
     // 1. TENTATIVA: TEXTO COMPLETO
@@ -70,6 +79,7 @@ function encontrarUnidadeCurricular(textoPDF, unidade) {
     if (posicao !== -1) {
         return posicao;
     }
+
 
     // --------------------------------------------------
     // 2. TENTATIVA: SEM ESPAÇOS
@@ -90,6 +100,7 @@ function encontrarUnidadeCurricular(textoPDF, unidade) {
         return posicaoSemEspacos;
     }
 
+
     // --------------------------------------------------
     // 3. TENTATIVA: PALAVRAS PRINCIPAIS
     // --------------------------------------------------
@@ -105,7 +116,9 @@ function encontrarUnidadeCurricular(textoPDF, unidade) {
     for (const palavra of palavras) {
 
         const pos =
-            textoNormalizado.indexOf(palavra);
+            textoNormalizado.indexOf(
+                palavra
+            );
 
         if (pos !== -1) {
             return pos;
@@ -115,11 +128,15 @@ function encontrarUnidadeCurricular(textoPDF, unidade) {
     return -1;
 }
 
+
 // ======================================================
 // EXTRAIR TRECHO RELEVANTE DO PDF
 // ======================================================
 
-function extrairTrecho(textoPDF, unidade) {
+function extrairTrecho(
+    textoPDF,
+    unidade
+) {
 
     const textoNormalizado =
         normalizarTexto(textoPDF);
@@ -133,15 +150,24 @@ function extrairTrecho(textoPDF, unidade) {
             unidade
         );
 
+
+    // --------------------------------------------------
+    // SE NÃO ENCONTRAR A UC
+    // --------------------------------------------------
+
     if (posicao === -1) {
 
         return textoPDF.substring(
             0,
-            20000
+            4000
         );
     }
 
-    // Procurar novamente no texto normalizado
+
+    // --------------------------------------------------
+    // PROCURAR NOVAMENTE NO TEXTO NORMALIZADO
+    // --------------------------------------------------
+
     posicao =
         textoNormalizado.indexOf(
             unidadeNormalizada
@@ -151,16 +177,21 @@ function extrairTrecho(textoPDF, unidade) {
         posicao = 0;
     }
 
+
+    // --------------------------------------------------
+    // TRECHO REDUZIDO
+    // --------------------------------------------------
+
     const inicio =
         Math.max(
             0,
-            posicao - 5000
+            posicao - 1000
         );
 
     const fim =
         Math.min(
             textoPDF.length,
-            posicao + 15000
+            posicao + 3000
         );
 
     return textoPDF.substring(
@@ -168,6 +199,7 @@ function extrairTrecho(textoPDF, unidade) {
         fim
     );
 }
+
 
 // ======================================================
 // ESCOLHER PLANO DE CURSO
@@ -179,7 +211,9 @@ function selecionarPDF(curso) {
         normalizarTexto(curso);
 
     if (
-        cursoNormalizado.includes("informatica")
+        cursoNormalizado.includes(
+            "informatica"
+        )
     ) {
 
         return path.join(
@@ -191,7 +225,9 @@ function selecionarPDF(curso) {
     }
 
     if (
-        cursoNormalizado.includes("biotecnologia")
+        cursoNormalizado.includes(
+            "biotecnologia"
+        )
     ) {
 
         return path.join(
@@ -205,6 +241,7 @@ function selecionarPDF(curso) {
     return null;
 }
 
+
 // ======================================================
 // GERAR ROTEIRO COM IA
 // ======================================================
@@ -214,184 +251,112 @@ async function gerarDesenvolvimento(
     trechoPDF
 ) {
 
-    const prompt = `
+    const prompt = `Você é um Assistente Pedagógico especializado na metodologia SENAI.
 
-Você é um Assistente Pedagógico especializado na metodologia SENAI.
+Sua única função é transformar a descrição fornecida pelo docente em uma redação pedagógica curta, profissional e objetiva.
 
-Sua única função é TRANSFORMAR a descrição fornecida pelo docente
-em uma redação pedagógica curta, profissional e objetiva.
+NÃO elabore uma aula.
+NÃO planeje uma aula.
+NÃO complete a aula.
+NÃO crie atividades novas.
+NÃO amplie a descrição do docente.
+A descrição do docente é o limite da resposta.
 
-IMPORTANTE:
-
-NÃO ELABORE UMA AULA.
-NÃO PLANEJE UMA AULA.
-NÃO COMPLETE A AULA.
-NÃO CRIE UMA ATIVIDADE NOVA.
-NÃO AMPLIE A DESCRIÇÃO DO DOCENTE.
-
-A descrição do docente é o LIMITE da resposta.
-
-Você deve apenas interpretar o que o professor informou,
-organizar as ideias e melhorar a redação.
-
-========================================
-DADOS DO DOCENTE
-========================================
+DADOS:
 
 Docente: ${dados.docente}
-
 Unidade Curricular: ${dados.unidade_curricular}
-
 Curso: ${dados.curso}
-
 Turma: ${dados.turma}
-
 Período: ${dados.data}
 
-Conteúdo informado pelo docente:
-
+Conteúdo:
 ${dados.conteudo}
 
-Atividade informada pelo docente:
-
+Atividade:
 ${dados.atividade}
 
-========================================
-PLANO DE CURSO
-========================================
+PLANO DE CURSO:
 
-O trecho abaixo serve SOMENTE para verificar a nomenclatura
-do conteúdo e manter a coerência com a Unidade Curricular.
+Use o trecho abaixo somente para verificar a nomenclatura e manter a coerência com a Unidade Curricular.
 
-NÃO utilize o Plano de Curso para criar novas atividades,
-etapas, conteúdos, metodologias ou procedimentos.
+Não use o plano para criar novas atividades, conteúdos, etapas ou metodologias.
 
 ${trechoPDF}
 
-========================================
-REGRAS
-========================================
+REGRAS:
 
-1. O conteúdo informado pelo docente tem prioridade absoluta.
+1. O conteúdo e a atividade informados pelo docente têm prioridade absoluta.
+2. Apenas melhore a redação do que foi informado.
+3. Não invente informações.
+4. Não acrescente conteúdos técnicos.
+5. Não acrescente etapas de execução.
+6. Não acrescente exercícios.
+7. Não acrescente avaliações.
+8. Não acrescente apresentações.
+9. Não acrescente trabalho em grupo ou dupla.
+10. Não acrescente situação-problema.
+11. Não acrescente resolução de problemas.
+12. Não acrescente protagonismo do estudante.
+13. Não acrescente mundo do trabalho.
+14. Não acrescente demonstrações ou experimentação.
+15. Não transforme uma descrição curta em uma aula detalhada.
+16. Se o professor fornecer poucas informações, a resposta também deve conter poucas informações.
 
-2. A atividade informada pelo docente tem prioridade absoluta.
+ESTRATÉGIA:
 
-3. Apenas melhore a redação do que foi informado.
+Escreva uma frase curta descrevendo como a aula será conduzida.
 
-4. Não invente informações.
+Não invente uma metodologia que não esteja indicada ou que não seja coerente com a descrição.
 
-5. Não acrescente conteúdos técnicos que não foram informados.
-
-6. Não acrescente etapas de execução.
-
-7. Não acrescente exercícios.
-
-8. Não acrescente avaliações.
-
-9. Não acrescente apresentação de trabalhos.
-
-10. Não acrescente trabalho em grupo ou dupla.
-
-11. Não acrescente situação-problema.
-
-12. Não acrescente resolução de problemas.
-
-13. Não acrescente protagonismo do estudante.
-
-14. Não acrescente mundo do trabalho.
-
-15. Não acrescente demonstrações.
-
-16. Não acrescente experimentação.
-
-17. Não acrescente procedimentos pedagógicos que não foram informados.
-
-18. Não transforme uma descrição curta em uma aula detalhada.
-
-19. Não utilize informações do Plano de Curso para aumentar a atividade.
-
-20. Se o professor fornecer poucas informações, a resposta deve
-também conter poucas informações.
-
-========================================
-ESTRATÉGIA
-========================================
-
-Escreva uma frase curta descrevendo a forma como o professor
-indicou que a aula será conduzida.
-
-Se o professor não informar uma metodologia específica,
-não invente uma.
-
-Pode utilizar expressões como "aula expositiva e dialogada"
-somente quando forem coerentes com a descrição fornecida.
-
-========================================
-ATIVIDADE EM SALA
-========================================
+ATIVIDADE EM SALA:
 
 Escreva uma frase curta descrevendo a principal ação dos estudantes.
 
-Não transforme a atividade em uma lista de tarefas.
-
 Não acrescente ações que não foram informadas.
 
-========================================
-FORMATO OBRIGATÓRIO
-========================================
+FORMATO OBRIGATÓRIO:
 
 Estratégia:
-
 [uma frase curta]
 
 Atividade em sala:
-
 [uma frase curta]
 
-========================================
-EXEMPLO
-========================================
+EXEMPLO:
 
-Entrada do professor:
+Entrada:
+Vou finalizar o HTML e iniciar o assunto CSS.
 
-"Vou finalizar o HTML e iniciar o assunto CSS."
-
-Resposta esperada:
+Saída:
 
 Estratégia:
-
 Aula expositiva e dialogada voltada para a finalização da estruturação em HTML e introdução aos conceitos de CSS.
 
 Atividade em sala:
-
 Desenvolvimento prático para conclusão da estrutura em HTML e aplicação inicial de estilos utilizando CSS.
-
-NÃO acrescente seletores, cores, fontes, margens, espaçamentos,
-Flexbox, Grid, responsividade, situação-problema, exercícios,
-avaliação, apresentação ou qualquer outra informação não mencionada.
-
-========================================
 
 RETORNE SOMENTE A ESTRATÉGIA E A ATIVIDADE EM SALA.
 
-NÃO utilize Markdown.
-NÃO utilize asteriscos (*).
-NÃO utilize negrito.
-NÃO utilize qualquer formatação Markdown.
-Retorne apenas texto simples.
-
-`;
+Não utilize Markdown.
+Não utilize asteriscos.
+Não utilize negrito.
+Retorne somente texto simples.`;
 
     const resposta =
         await client.responses.create({
+
             model: "gpt-5.6-luna",
+
             input: prompt
+
         });
 
     return resposta.output_text
         .replace(/\*\*/g, "")
         .trim();
 }
+
 
 // ======================================================
 // ROTA PRINCIPAL
@@ -415,7 +380,9 @@ app.post(
                 "======================================"
             );
 
+
             const dados = req.body;
+
 
             // --------------------------------------------------
             // VALIDAR DADOS
@@ -424,10 +391,15 @@ app.post(
             if (!dados) {
 
                 return res.status(400).json({
+
                     sucesso: false,
-                    erro: "Nenhum dado foi recebido."
+
+                    erro:
+                        "Nenhum dado foi recebido."
+
                 });
             }
+
 
             if (
                 !dados.docente ||
@@ -441,16 +413,22 @@ app.post(
             ) {
 
                 return res.status(400).json({
+
                     sucesso: false,
-                    erro: "Preencha todos os campos."
+
+                    erro:
+                        "Preencha todos os campos."
+
                 });
             }
+
 
             // --------------------------------------------------
             // FORMATAR DATA
             // --------------------------------------------------
 
             const meses = [
+
                 "janeiro",
                 "fevereiro",
                 "março",
@@ -463,7 +441,9 @@ app.post(
                 "outubro",
                 "novembro",
                 "dezembro"
+
             ];
+
 
             function formatarData(data) {
 
@@ -479,6 +459,7 @@ app.post(
                 return `${dia} de ${meses[mes - 1]}`;
             }
 
+
             const dataInicio =
                 formatarData(
                     dados.dataInicio
@@ -489,12 +470,15 @@ app.post(
                     dados.dataFim
                 );
 
+
             console.log(
                 dataFim,
                 dataInicio
             );
 
+
             let intervalo = dataInicio;
+
 
             if (dataInicio == dataFim) {
 
@@ -505,9 +489,12 @@ app.post(
 
                 intervalo =
                     `${dataInicio} até ${dataFim}`;
+
             }
 
+
             console.log(intervalo);
+
 
             // --------------------------------------------------
             // ESCOLHER PDF
@@ -518,19 +505,25 @@ app.post(
                     dados.curso
                 );
 
+
             if (!caminhoPDF) {
 
                 return res.status(400).json({
+
                     sucesso: false,
+
                     erro:
                         "Não foi encontrado um plano de curso para esse curso."
+
                 });
             }
+
 
             console.log(
                 "Plano selecionado:",
                 caminhoPDF
             );
+
 
             // --------------------------------------------------
             // LER PDF
@@ -541,23 +534,29 @@ app.post(
                     caminhoPDF
                 );
 
+
             const { PDFParse } =
                 require("pdf-parse");
+
 
             const parser =
                 new PDFParse({
                     data: arquivoPDF
                 });
 
+
             const resultadoPDF =
                 await parser.getText();
+
 
             const textoPDF =
                 resultadoPDF.text;
 
+
             console.log(
                 "PDF lido com sucesso."
             );
+
 
             // --------------------------------------------------
             // EXTRAIR TRECHO DA UC
@@ -569,9 +568,11 @@ app.post(
                     dados.unidade_curricular
                 );
 
+
             console.log(
                 "Trecho relevante extraído."
             );
+
 
             // --------------------------------------------------
             // DADOS PARA A IA
@@ -599,7 +600,9 @@ app.post(
 
                 atividade:
                     dados.atividade
+
             };
+
 
             // --------------------------------------------------
             // CHAMAR IA
@@ -609,15 +612,18 @@ app.post(
                 "Gerando desenvolvimento com IA..."
             );
 
+
             const desenvolvimento =
                 await gerarDesenvolvimento(
                     dadosIA,
                     trechoPDF
                 );
 
+
             console.log(
                 "Desenvolvimento gerado."
             );
+
 
             // --------------------------------------------------
             // CHAMAR API FLASK
@@ -627,20 +633,25 @@ app.post(
                 "Enviando dados para API Flask..."
             );
 
+
             console.log(
                 "URL da API Flask:",
                 FLASK_API_URL
             );
 
+
             const respostaWord =
                 await fetch(
                     `${FLASK_API_URL}/gerar-pdf`,
                     {
+
                         method: "POST",
 
                         headers: {
+
                             "Content-Type":
                                 "application/json"
+
                         },
 
                         body:
@@ -666,26 +677,39 @@ app.post(
 
                                 desenvolvimento:
                                     desenvolvimento
+
                             })
+
                     }
                 );
+
+
+            // --------------------------------------------------
+            // VERIFICAR RESPOSTA FLASK
+            // --------------------------------------------------
 
             if (!respostaWord.ok) {
 
                 const erro =
                     await respostaWord.text();
 
+
                 console.log(
                     "Erro da API Flask:",
                     erro
                 );
 
+
                 return res.status(500).json({
+
                     sucesso: false,
+
                     erro:
                         "Erro ao gerar o documento Word."
+
                 });
             }
+
 
             // --------------------------------------------------
             // RECEBER WORD
@@ -696,9 +720,11 @@ app.post(
                     await respostaWord.arrayBuffer()
                 );
 
+
             console.log(
                 "Documento recebido da API Flask."
             );
+
 
             // --------------------------------------------------
             // ENVIAR WORD PARA O NAVEGADOR
@@ -709,16 +735,20 @@ app.post(
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             );
 
+
             res.setHeader(
                 "Content-Disposition",
                 'attachment; filename="roteiro_estudo_semanal.docx"'
             );
 
+
             res.send(buffer);
+
 
             console.log(
                 "Documento enviado para o navegador."
             );
+
 
             console.log(
                 "======================================\n"
@@ -730,19 +760,27 @@ app.post(
                 "\nERRO:"
             );
 
+
             console.log(
                 erro
             );
 
+
             res.status(500).json({
+
                 sucesso: false,
+
                 erro:
                     erro.message ||
                     "Erro interno do servidor."
+
             });
+
         }
+
     }
 );
+
 
 // ======================================================
 // INICIAR SERVIDOR
@@ -771,5 +809,6 @@ app.listen(
         console.log(
             "======================================"
         );
+
     }
 );
