@@ -4,362 +4,202 @@
     box-sizing: border-box;
 }
 
-
 body {
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    background:
-        #f3f5f7;
-
-    color:
-        #222;
-
-    min-height:
-        100vh;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    padding:
-        30px;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f3f5f7;
+    color: #222;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column; /* Empilha o conteúdo e o rodapé verticalmente */
 }
-
 
 .container {
-
-    width:
-        100%;
-
-    max-width:
-        850px;
+    width: 100%;
+    max-width: 850px;
+    margin: 0 auto; /* Centraliza o container horizontalmente */
+    flex: 1; /* Faz o container crescer o máximo possível, empurrando o rodapé para baixo */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Mantém o card centralizado verticalmente */
+    padding: 30px; /* O padding que estava no body veio para cá */
 }
-
 
 .card {
-
-    background:
-        white;
-
-    border-radius:
-        16px;
-
-    padding:
-        35px;
-
-    box-shadow:
-        0 8px 30px rgba(0, 0, 0, 0.08);
+    background: white;
+    border-radius: 16px;
+    padding: 35px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    width: 100%;
 }
-
 
 .header {
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    gap:
-        18px;
-
-    margin-bottom:
-        35px;
-
-    padding-bottom:
-        25px;
-
-    border-bottom:
-        1px solid #e5e5e5;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 35px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #e5e5e5;
 }
-
 
 .logo {
-
-    width:
-        70px;
-
-    height:
-        70px;
-
-    border-radius:
-        12px;
-
-    background:
-        #0066a1;
-
-    color:
-        white;
-
-    display:
-        flex;
-
-    align-items:
-        center;
-
-    justify-content:
-        center;
-
-    font-weight:
-        bold;
-
-    font-size:
-        20px;
+    width: 70px;
+    height: 70px;
+    border-radius: 12px;
+    background: #0066a1;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 20px;
 }
-
 
 .header h1 {
-
-    font-size:
-        26px;
-
-    margin-bottom:
-        6px;
+    font-size: 26px;
+    margin-bottom: 6px;
 }
-
 
 .header p {
-
-    color:
-        #666;
-
-    font-size:
-        15px;
+    color: #666;
+    font-size: 15px;
 }
-
 
 .campo {
-
-    display:
-        flex;
-
-    flex-direction:
-        column;
-
-    margin-bottom:
-        20px;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
 }
-
 
 .campo label {
-
-    font-weight:
-        bold;
-
-    font-size:
-        14px;
-
-    margin-bottom:
-        8px;
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 8px;
 }
-
 
 input,
 select,
 textarea {
-
-    width:
-        100%;
-
-    border:
-        1px solid #d5d9dd;
-
-    border-radius:
-        8px;
-
-    padding:
-        12px 14px;
-
-    font-family:
-        inherit;
-
-    font-size:
-        15px;
-
-    outline:
-        none;
-
-    transition:
-        border 0.2s,
-        box-shadow 0.2s;
-
-    background:
-        white;
+    width: 100%;
+    border: 1px solid #d5d9dd;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+    background: white;
 }
-
 
 input:focus,
 select:focus,
 textarea:focus {
-
-    border-color:
-        #0066a1;
-
-    box-shadow:
-        0 0 0 3px rgba(0, 102, 161, 0.10);
+    border-color: #0066a1;
+    box-shadow: 0 0 0 3px rgba(0, 102, 161, 0.10);
 }
-
 
 textarea {
-
-    resize:
-        vertical;
-
-    min-height:
-        90px;
+    resize: vertical;
+    min-height: 90px;
 }
-
 
 .linha {
-
-    display:
-        grid;
-
-    grid-template-columns:
-        1fr 1fr;
-
-    gap:
-        20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
-
 
 button {
-
-    width:
-        100%;
-
-    border:
-        none;
-
-    border-radius:
-        8px;
-
-    padding:
-        14px;
-
-    background:
-        #0066a1;
-
-    color:
-        white;
-
-    font-size:
-        16px;
-
-    font-weight:
-        bold;
-
-    cursor:
-        pointer;
-
-    transition:
-        background 0.2s,
-        transform 0.1s;
-
-    margin-top:
-        5px;
+    width: 100%;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    background: #0066a1;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 5px;
 }
-
 
 button:hover {
-
-    background:
-        #00517f;
+    background: #00517f;
 }
-
 
 button:active {
-
-    transform:
-        scale(0.99);
+    transform: scale(0.99);
 }
-
 
 button:disabled {
-
-    background:
-        #9aa7af;
-
-    cursor:
-        not-allowed;
+    background: #9aa7af;
+    cursor: not-allowed;
 }
-
 
 .mensagem {
-
-    text-align:
-        center;
-
-    margin-top:
-        18px;
-
-    font-size:
-        14px;
-
-    min-height:
-        20px;
+    text-align: center;
+    margin-top: 18px;
+    font-size: 14px;
+    min-height: 20px;
 }
 
+/* --- ESTILOS DO RODAPÉ --- */
+.site-footer {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    text-align: center;
+    padding: 25px 20px;
+    font-family: Arial, sans-serif;
+    width: 100%; /* Garante que ocupe de ponta a ponta */
+}
 
+.site-footer p {
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+.site-footer a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+}
+
+.site-footer a:hover {
+    color: #2980b9;
+    text-decoration: underline;
+}
+
+.whatsapp-icon {
+    color: #25D366; 
+}
+
+/* --- RESPONSIVIDADE (CELULAR) --- */
 @media (max-width: 650px) {
-
-    body {
-
-        padding:
-            15px;
+    .container {
+        padding: 15px; /* Movido do body para o container */
+        justify-content: flex-start; /* No celular, o formulário sobe um pouco para não cortar */
     }
-
 
     .card {
-
-        padding:
-            22px;
+        padding: 22px;
     }
-
 
     .header {
-
-        align-items:
-            flex-start;
+        align-items: flex-start;
     }
-
 
     .header h1 {
-
-        font-size:
-            21px;
+        font-size: 21px;
     }
-
 
     .logo {
-
-        width:
-            55px;
-
-        height:
-            55px;
-
-        font-size:
-            16px;
+        width: 55px;
+        height: 55px;
+        font-size: 16px;
     }
-
 
     .linha {
-
-        grid-template-columns:
-            1fr;
-
-        gap:
-            0;
+        grid-template-columns: 1fr;
+        gap: 0;
     }
-
 }
