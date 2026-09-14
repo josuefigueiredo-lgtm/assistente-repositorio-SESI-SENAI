@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Assistente Pedagógico SENAI</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+</head>
+
+<body>
+
+    <main class="container">
+
+        <section class="card">
+
+            <header class="header">
+
+                <div class="logo">
+                    SENAI
+                </div>
+
+                <div>
+                    <h1>
+                        Assistente Pedagógico
+                    </h1>
+
+                    <p>
+                        Gerador de Roteiro de Estudo Semanal
+                    </p>
+                </div>
+
+            </header>
+
+
+            <form id="formRoteiro">
+
+                <div class="campo">
+
+                    <label for="docente">
+                        Nome do docente
+                    </label>
+
+                    <input
+                        type="text"
+                        id="docente"
+                        placeholder="Digite o nome do docente"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="unidade">
+                        Unidade Curricular
+                    </label>
+
+                    <input
+                        type="text"
+                        id="unidade"
+                        placeholder="Ex.: Projeto de Front-End"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="linha">
+
+                    <div class="campo">
+
+                        <label for="curso">
+                            Curso
+                        </label>
+
+                        <select
+                            id="curso"
+                            required
+                        >
+
+                            <option value="">
+                                Selecione o curso
+                            </option>
+
+                            <option value="Informatica">
+                                Informática
+                            </option>
+
+                            <option value="Biotecnologia">
+                                Biotecnologia
+                            </option>
+
+                        </select>
+
+                    </div>
+
+
+                    <div class="campo">
+
+                        <label for="turma">
+                            Turma
+                        </label>
+
+                        <input
+                            type="text"
+                            id="turma"
+                            placeholder="Ex.: 2º D"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+               <div class="linha">
+
+    <div class="campo">
+
+        <label for="dataInicio">
+            Data inicial
+        </label>
+
+        <input
+            type="date"
+            id="dataInicio"
+            required
+        >
+
+    </div>
+
+
+    <div class="campo">
+
+        <label for="dataFim">
+            Data final
+        </label>
+
+        <input
+            type="date"
+            id="dataFim"
+            required
+        >
+
+    </div>
+
+</div>
+
+
+                <div class="campo">
+
+                    <label for="conteudo">
+                        Conteúdo
+                    </label>
+
+                    <textarea
+                        id="conteudo"
+                        placeholder="Informe o conteúdo que será trabalhado na aula"
+                        rows="3"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <div class="campo">
+
+                    <label for="atividade">
+                        Atividade
+                    </label>
+
+                    <textarea
+                        id="atividade"
+                        placeholder="Descreva a atividade que será realizada pelos estudantes"
+                        rows="4"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    id="btnGerar"
+                >
+                    Gerar roteiro
+                </button>
+
+
+                <div
+                    id="mensagem"
+                    class="mensagem"
+                ></div>
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

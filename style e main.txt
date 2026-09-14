@@ -1,0 +1,832 @@
+from flask import Flask, request, jsonify, send_file
+from docxtpl import DocxTemplate
+import os
+import uuid
+
+app = Flask(__name__)
+
+MODELO = os.path.join(
+    os.path.dirname(__file__),
+    "arquivo de referência-modelo.docx"
+)
+
+
+@app.route("/gerar-pdf", methods=["POST"])
+def gerar_pdf():
+
+    try:
+        dados = request.json
+
+        if not dados:
+            return jsonify({
+                "sucesso": False,
+                "erro": "Nenhum dado foi recebido."
+            }), 400
+
+        # Carrega o modelo Word
+        documento = DocxTemplate(MODELO)
+
+        # Dados que serão enviados para o modelo
+        contexto = {
+    "data": dados.get("data", ""),
+    "unidade_curricular": dados.get("unidade_curricular", ""),
+    "docente": dados.get("docente", ""),
+    "curso": dados.get("curso", ""),
+    "turma": dados.get("turma", ""),
+    "conteudo": dados.get("conteudo", ""),
+    "desenvolvimento": dados.get("desenvolvimento", "")
+}
+
+        # Preenche os campos
+        documento.render(contexto)
+
+        # Nome temporário do arquivo
+        nome_arquivo = f"roteiro_{uuid.uuid4().hex}.docx"
+
+        caminho_saida = os.path.join(
+            os.path.dirname(__file__),
+            nome_arquivo
+        )
+
+        # Salva o Word preenchido
+        documento.save(caminho_saida)
+
+        print("\n==========================================")
+        print("DOCUMENTO GERADO COM SUCESSO")
+        print("==========================================")
+        print(caminho_saida)
+        print("==========================================\n")
+
+        return send_file(
+            caminho_saida,
+            as_attachment=True,
+            download_name="roteiro_estudo_semanal.docx"
+        )
+
+    except Exception as erro:
+
+        print("\nERRO:")
+        print(str(erro))
+
+        return jsonify({
+            "sucesso": False,
+            "erro": str(erro)
+        }), 500
+
+
+if __name__ == "__main__":
+    app.run(
+        host="127.0.0.1",
+        port=5000,
+        debug=True
+    )
+
+
+server.js --
+const express = require("express");
+const fs = require("fs");
+const path = require("path");
+const OpenAI = require("openai");
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+const app = express();
+const PORTA = 3000;
+
+// ======================================================
+// CONFIGURAÇÕES
+// ======================================================
+
+const client = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+});
+
+
+// Permitir receber JSON do navegador
+app.use(express.json());
+
+
+// Servir os arquivos da pasta public
+app.use(express.static(
+    path.join(__dirname, "public")
+));
+
+
+// ======================================================
+// FUNÇÃO PARA NORMALIZAR TEXTO
+// ======================================================
+
+function normalizarTexto(texto) {
+
+    return texto
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[-–—]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+}
+
+
+// ======================================================
+// ENCONTRAR UNIDADE CURRICULAR NO PDF
+// ======================================================
+
+function encontrarUnidadeCurricular(textoPDF, unidade) {
+
+    const textoNormalizado =
+        normalizarTexto(textoPDF);
+
+    const unidadeNormalizada =
+        normalizarTexto(unidade);
+
+
+    // --------------------------------------------------
+    // 1. TENTATIVA: TEXTO COMPLETO
+    // --------------------------------------------------
+
+    let posicao =
+        textoNormalizado.indexOf(
+            unidadeNormalizada
+        );
+
+
+    if (posicao !== -1) {
+
+        return posicao;
+
+    }
+
+
+    // --------------------------------------------------
+    // 2. TENTATIVA: SEM ESPAÇOS
+    // --------------------------------------------------
+
+    const textoSemEspacos =
+        textoNormalizado.replace(/\s/g, "");
+
+    const unidadeSemEspacos =
+        unidadeNormalizada.replace(/\s/g, "");
+
+
+    const posicaoSemEspacos =
+        textoSemEspacos.indexOf(
+            unidadeSemEspacos
+        );
+
+
+    if (posicaoSemEspacos !== -1) {
+
+        return posicaoSemEspacos;
+
+    }
+
+
+    // --------------------------------------------------
+    // 3. TENTATIVA: PALAVRAS PRINCIPAIS
+    // --------------------------------------------------
+
+    const palavras =
+        unidadeNormalizada
+            .split(" ")
+            .filter(palavra =>
+                palavra.length >= 4
+            );
+
+
+    for (const palavra of palavras) {
+
+        const pos =
+            textoNormalizado.indexOf(palavra);
+
+        if (pos !== -1) {
+
+            return pos;
+
+        }
+
+    }
+
+
+    return -1;
+
+}
+
+
+// ======================================================
+// EXTRAIR TRECHO RELEVANTE DO PDF
+// ======================================================
+
+function extrairTrecho(textoPDF, unidade) {
+
+    const textoNormalizado =
+        normalizarTexto(textoPDF);
+
+    const unidadeNormalizada =
+        normalizarTexto(unidade);
+
+
+    let posicao =
+        encontrarUnidadeCurricular(
+            textoPDF,
+            unidade
+        );
+
+
+    if (posicao === -1) {
+
+        return textoPDF.substring(
+            0,
+            20000
+        );
+
+    }
+
+
+    // Procurar novamente no texto normalizado
+    posicao =
+        textoNormalizado.indexOf(
+            unidadeNormalizada
+        );
+
+
+    if (posicao === -1) {
+
+        posicao = 0;
+
+    }
+
+
+    const inicio =
+        Math.max(
+            0,
+            posicao - 5000
+        );
+
+
+    const fim =
+        Math.min(
+            textoPDF.length,
+            posicao + 15000
+        );
+
+
+    return textoPDF.substring(
+        inicio,
+        fim
+    );
+
+}
+
+
+// ======================================================
+// ESCOLHER PLANO DE CURSO
+// ======================================================
+
+function selecionarPDF(curso) {
+
+    const cursoNormalizado =
+        normalizarTexto(curso);
+
+
+    if (
+        cursoNormalizado.includes("informatica")
+    ) {
+
+        return path.join(
+            __dirname,
+            "referencias",
+            "informatica",
+            "plano_de_curso.pdf"
+        );
+
+    }
+
+
+    if (
+        cursoNormalizado.includes("biotecnologia")
+    ) {
+
+        return path.join(
+            __dirname,
+            "referencias",
+            "biotecnologia",
+            "plano_de_curso.pdf"
+        );
+
+    }
+
+
+    return null;
+
+}
+
+
+// ======================================================
+// GERAR ROTEIRO COM IA
+// ======================================================
+
+async function gerarDesenvolvimento(dados, trechoPDF) {
+
+    const prompt = `
+
+Você é um Assistente Pedagógico especializado na metodologia SENAI.
+
+Sua função é elaborar o DESENVOLVIMENTO de um roteiro de estudo semanal.
+
+DADOS INFORMADOS PELO DOCENTE:
+
+Docente: ${dados.docente}
+
+Unidade Curricular: ${dados.unidade_curricular}
+
+Curso: ${dados.curso}
+
+Turma: ${dados.turma}
+
+Período: ${dados.data}
+
+Conteúdo informado pelo docente:
+
+${dados.conteudo}
+
+Atividade informada pelo docente:
+
+${dados.atividade}
+
+
+TRECHO DO PLANO DE CURSO:
+
+${trechoPDF}
+
+
+ORIENTAÇÕES:
+
+1. Utilize a metodologia SENAI.
+
+2. Relacione o desenvolvimento com a Unidade Curricular.
+
+3. O conteúdo informado pelo docente deve ter prioridade.
+
+4. Não invente competências ou conteúdos que não tenham relação com a Unidade Curricular.
+
+5. O desenvolvimento deve apresentar uma abordagem pedagógica clara.
+
+6. Considere contextualização, resolução de problemas, aplicação prática, protagonismo do estudante e situações relacionadas ao mundo do trabalho.
+
+7. A atividade deve estar relacionada ao conteúdo informado.
+
+8. O texto deve ser adequado para um roteiro de estudo semanal.
+
+9. O desenvolvimento deve conter obrigatoriamente:
+
+Estratégia:
+
+Atividade em sala:
+
+10. Não faça perguntas ao docente.
+
+11. Não explique o que você está fazendo.
+
+12. Retorne SOMENTE o texto do desenvolvimento.
+
+`;
+
+    const resposta =
+        await client.responses.create({
+
+            model: "gpt-5.6-luna",
+
+            input: prompt
+
+        });
+
+
+    return resposta.output_text;
+
+}
+
+
+// ======================================================
+// ROTA PRINCIPAL
+// ======================================================
+
+app.post(
+    "/gerar",
+    async (req, res) => {
+
+        try {
+
+            console.log("\n======================================");
+            console.log("NOVA SOLICITAÇÃO");
+            console.log("======================================");
+
+
+            const dados = req.body;
+
+
+            // --------------------------------------------------
+            // VALIDAR DADOS
+            // --------------------------------------------------
+
+            if (!dados) {
+
+                return res.status(400).json({
+
+                    sucesso: false,
+
+                    erro: "Nenhum dado foi recebido."
+
+                });
+
+            }
+
+
+            if (
+                !dados.docente ||
+                !dados.unidade_curricular ||
+                !dados.curso ||
+                !dados.turma ||
+                !dados.dataInicio ||
+                !dados.dataFim ||
+                !dados.conteudo ||
+                !dados.atividade
+            ) {
+
+                return res.status(400).json({
+
+                    sucesso: false,
+
+                    erro: "Preencha todos os campos."
+
+                });
+
+            }
+
+
+            // --------------------------------------------------
+            // FORMATAR DATA
+            // --------------------------------------------------
+
+            const meses = [
+
+                "janeiro",
+                "fevereiro",
+                "março",
+                "abril",
+                "maio",
+                "junho",
+                "julho",
+                "agosto",
+                "setembro",
+                "outubro",
+                "novembro",
+                "dezembro"
+
+            ];
+
+
+            function formatarData(data) {
+
+                const partes =
+                    data.split("-");
+
+                const dia =
+                    Number(partes[2]);
+
+                const mes =
+                    Number(partes[1]);
+
+
+                return `${dia} de ${meses[mes - 1]}`;
+
+            }
+
+
+            const dataInicio =
+                formatarData(
+                    dados.dataInicio
+                );
+
+
+            const dataFim =
+                formatarData(
+                    dados.dataFim
+                );
+
+
+            const intervalo =
+                `${dataInicio} até ${dataFim}`;
+
+
+            // --------------------------------------------------
+            // ESCOLHER PDF
+            // --------------------------------------------------
+
+            const caminhoPDF =
+                selecionarPDF(
+                    dados.curso
+                );
+
+
+            if (!caminhoPDF) {
+
+                return res.status(400).json({
+
+                    sucesso: false,
+
+                    erro:
+                        "Não foi encontrado um plano de curso para esse curso."
+
+                });
+
+            }
+
+
+            console.log(
+                "Plano selecionado:",
+                caminhoPDF
+            );
+
+
+            // --------------------------------------------------
+            // LER PDF
+            // --------------------------------------------------
+
+            const arquivoPDF =
+                fs.readFileSync(
+                    caminhoPDF
+                );
+
+
+            const { PDFParse } =
+                require("pdf-parse");
+
+
+            const parser =
+                new PDFParse({
+
+                    data: arquivoPDF
+
+                });
+
+
+            const resultadoPDF =
+                await parser.getText();
+
+
+            const textoPDF =
+                resultadoPDF.text;
+
+
+            console.log(
+                "PDF lido com sucesso."
+            );
+
+
+            // --------------------------------------------------
+            // EXTRAIR TRECHO DA UC
+            // --------------------------------------------------
+
+            const trechoPDF =
+                extrairTrecho(
+                    textoPDF,
+                    dados.unidade_curricular
+                );
+
+
+            console.log(
+                "Trecho relevante extraído."
+            );
+
+
+            // --------------------------------------------------
+            // DADOS PARA A IA
+            // --------------------------------------------------
+
+            const dadosIA = {
+
+                docente:
+                    dados.docente,
+
+                unidade_curricular:
+                    dados.unidade_curricular,
+
+                curso:
+                    dados.curso,
+
+                turma:
+                    dados.turma,
+
+                data:
+                    intervalo,
+
+                conteudo:
+                    dados.conteudo,
+
+                atividade:
+                    dados.atividade
+
+            };
+
+
+            // --------------------------------------------------
+            // CHAMAR IA
+            // --------------------------------------------------
+
+            console.log(
+                "Gerando desenvolvimento com IA..."
+            );
+
+
+            const desenvolvimento =
+                await gerarDesenvolvimento(
+                    dadosIA,
+                    trechoPDF
+                );
+
+
+            console.log(
+                "Desenvolvimento gerado."
+            );
+
+
+            // --------------------------------------------------
+            // CHAMAR API FLASK
+            // --------------------------------------------------
+
+            console.log(
+                "Enviando dados para API Flask..."
+            );
+
+
+            const respostaWord =
+                await fetch(
+                    "http://127.0.0.1:5000/gerar-pdf",
+                    {
+
+                        method: "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                data:
+                                    intervalo,
+
+                                unidade_curricular:
+                                    dados.unidade_curricular,
+
+                                docente:
+                                    dados.docente,
+
+                                curso:
+                                    dados.curso,
+
+                                turma:
+                                    dados.turma,
+
+                                conteudo:
+                                    dados.conteudo,
+
+                                desenvolvimento:
+                                    desenvolvimento
+
+                            })
+
+                    }
+                );
+
+
+            if (!respostaWord.ok) {
+
+                const erro =
+                    await respostaWord.text();
+
+                console.log(
+                    "Erro da API Flask:",
+                    erro
+                );
+
+
+                return res.status(500).json({
+
+                    sucesso: false,
+
+                    erro:
+                        "Erro ao gerar o documento Word."
+
+                });
+
+            }
+
+
+            // --------------------------------------------------
+            // RECEBER WORD
+            // --------------------------------------------------
+
+            const buffer =
+                Buffer.from(
+                    await respostaWord.arrayBuffer()
+                );
+
+
+            console.log(
+                "Documento recebido da API Flask."
+            );
+
+
+            // --------------------------------------------------
+            // ENVIAR WORD PARA O NAVEGADOR
+            // --------------------------------------------------
+
+            res.setHeader(
+                "Content-Type",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            );
+
+
+            res.setHeader(
+                "Content-Disposition",
+                'attachment; filename="roteiro_estudo_semanal.docx"'
+            );
+
+
+            res.send(buffer);
+
+
+            console.log(
+                "Documento enviado para o navegador."
+            );
+
+
+            console.log(
+                "======================================\n"
+            );
+
+
+        } catch (erro) {
+
+            console.log(
+                "\nERRO:"
+            );
+
+            console.log(
+                erro
+            );
+
+
+            res.status(500).json({
+
+                sucesso: false,
+
+                erro:
+                    erro.message ||
+                    "Erro interno do servidor."
+
+            });
+
+        }
+
+    }
+);
+
+
+// ======================================================
+// INICIAR SERVIDOR
+// ======================================================
+
+app.listen(
+    PORTA,
+    () => {
+
+        console.log(
+            "======================================"
+        );
+
+        console.log(
+            "ASSISTENTE PEDAGÓGICO"
+        );
+
+        console.log(
+            "======================================"
+        );
+
+        console.log(
+            `Servidor rodando em http://localhost:${PORTA}`
+        );
+
+        console.log(
+            "======================================"
+        );
+
+    }
+);

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Roteiro de Estudo Semanal - SENAI</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 15mm;
+    }
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 10pt;
+      color: #111111;
+      margin: 0;
+      padding: 0;
+      line-height: 1.3;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .header .institucional {
+      font-size: 10pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #003366;
+      margin-bottom: 4px;
+    }
+    .header .curso {
+      font-size: 11pt;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .header .turma {
+      font-size: 10pt;
+      margin-bottom: 10px;
+    }
+    .header .titulo {
+      font-size: 13pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #003366;
+      margin-bottom: 4px;
+    }
+    .header .data {
+      font-size: 10.5pt;
+      font-weight: bold;
+      color: #003366;
+      text-transform: uppercase;
+    }
+    
+    .eixo-header {
+      background-color: #003366;
+      color: #ffffff;
+      font-weight: bold;
+      padding: 6px 10px;
+      font-size: 9.5pt;
+      border: 1px solid #003366;
+      margin-top: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+      table-layout: fixed;
+    }
+    th, td {
+      border: 1px solid #003366;
+      padding: 8px;
+      vertical-align: top;
+      font-size: 9pt;
+      word-wrap: break-word;
+    }
+    th {
+      background-color: #f0f4f8;
+      color: #003366;
+      font-weight: bold;
+      text-align: left;
+    }
+    
+    .col-uc { width: 22%; }
+    .col-docente { width: 18%; }
+    .col-conteudo { width: 25%; }
+    .col-desenvolvimento { width: 35%; }
+
+    .label-destaque {
+      font-weight: bold;
+      color: #003366;
+    }
+    .bloco-atividade {
+      margin-bottom: 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="institucional">Ensino Médio com Itinerário de Formação Técnica e Profissional</div>
+    <div class="curso">Técnico em {{curso}}</div>
+    <div class="turma">Turma {{turma}}</div>
+    <div class="titulo">Roteiro de Estudo Semanal</div>
+    <div class="data">{{data}}</div>
+  </div>
+
+  <div class="eixo-header">
+    Eixo Tecnológico: {{eixo_tecnologico}}
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="col-uc">Unidade Curricular</th>
+        <th class="col-docente">Docente</th>
+        <th class="col-conteudo">Objeto de conhecimento/Conteúdo</th>
+        <th class="col-desenvolvimento">Desenvolvimento das atividades</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{unidade_curricular}}</td>
+        <td>{{docente}}</td>
+        <td>{{conteudo}}</td>
+        <td>
+          <div class="bloco-atividade">
+            <span class="label-destaque">Estratégia:</span><br>
+            {{estrategia}}
+          </div>
+          <div class="bloco-atividade">
+            <span class="label-destaque">Atividade em sala:</span><br>
+            {{atividade_em_sala}}
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</body>
+</html>
