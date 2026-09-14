@@ -17,23 +17,26 @@ const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
+// URL da API Flask
+const FLASK_API_URL =
+    process.env.FLASK_API_URL ||
+    "http://127.0.0.1:5000";
 
 // Permitir receber JSON do navegador
 app.use(express.json());
 
-
 // Servir os arquivos da pasta public
-app.use(express.static(
-    path.join(__dirname, "public")
-));
-
+app.use(
+    express.static(
+        path.join(__dirname, "public")
+    )
+);
 
 // ======================================================
 // FUNÇÃO PARA NORMALIZAR TEXTO
 // ======================================================
 
 function normalizarTexto(texto) {
-
     return texto
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
@@ -41,9 +44,7 @@ function normalizarTexto(texto) {
         .replace(/[-–—]/g, " ")
         .replace(/\s+/g, " ")
         .trim();
-
 }
-
 
 // ======================================================
 // ENCONTRAR UNIDADE CURRICULAR NO PDF
@@ -57,7 +58,6 @@ function encontrarUnidadeCurricular(textoPDF, unidade) {
     const unidadeNormalizada =
         normalizarTexto(unidade);
 
-
     // --------------------------------------------------
     // 1. TENTATIVA: TEXTO COMPLETO
     // --------------------------------------------------
@@ -67,13 +67,9 @@ function encontrarUnidadeCurricular(textoPDF, unidade) {
             unidadeNormalizada
         );
 
-
     if (posicao !== -1) {
-
         return posicao;
-
     }
-
 
     // --------------------------------------------------
     // 2. TENTATIVA: SEM ESPAÇOS
@@ -85,19 +81,14 @@ function encontrarUnidadeCurricular(textoPDF, unidade) {
     const unidadeSemEspacos =
         unidadeNormalizada.replace(/\s/g, "");
 
-
     const posicaoSemEspacos =
         textoSemEspacos.indexOf(
             unidadeSemEspacos
         );
 
-
     if (posicaoSemEspacos !== -1) {
-
         return posicaoSemEspacos;
-
     }
-
 
     // --------------------------------------------------
     // 3. TENTATIVA: PALAVRAS PRINCIPAIS
@@ -106,10 +97,10 @@ function encontrarUnidadeCurricular(textoPDF, unidade) {
     const palavras =
         unidadeNormalizada
             .split(" ")
-            .filter(palavra =>
-                palavra.length >= 4
+            .filter(
+                palavra =>
+                    palavra.length >= 4
             );
-
 
     for (const palavra of palavras) {
 
@@ -117,18 +108,12 @@ function encontrarUnidadeCurricular(textoPDF, unidade) {
             textoNormalizado.indexOf(palavra);
 
         if (pos !== -1) {
-
             return pos;
-
         }
-
     }
 
-
     return -1;
-
 }
-
 
 // ======================================================
 // EXTRAIR TRECHO RELEVANTE DO PDF
@@ -142,13 +127,11 @@ function extrairTrecho(textoPDF, unidade) {
     const unidadeNormalizada =
         normalizarTexto(unidade);
 
-
     let posicao =
         encontrarUnidadeCurricular(
             textoPDF,
             unidade
         );
-
 
     if (posicao === -1) {
 
@@ -156,9 +139,7 @@ function extrairTrecho(textoPDF, unidade) {
             0,
             20000
         );
-
     }
-
 
     // Procurar novamente no texto normalizado
     posicao =
@@ -166,13 +147,9 @@ function extrairTrecho(textoPDF, unidade) {
             unidadeNormalizada
         );
 
-
     if (posicao === -1) {
-
         posicao = 0;
-
     }
-
 
     const inicio =
         Math.max(
@@ -180,21 +157,17 @@ function extrairTrecho(textoPDF, unidade) {
             posicao - 5000
         );
 
-
     const fim =
         Math.min(
             textoPDF.length,
             posicao + 15000
         );
 
-
     return textoPDF.substring(
         inicio,
         fim
     );
-
 }
-
 
 // ======================================================
 // ESCOLHER PLANO DE CURSO
@@ -204,7 +177,6 @@ function selecionarPDF(curso) {
 
     const cursoNormalizado =
         normalizarTexto(curso);
-
 
     if (
         cursoNormalizado.includes("informatica")
@@ -216,9 +188,7 @@ function selecionarPDF(curso) {
             "informatica",
             "plano_de_curso.pdf"
         );
-
     }
-
 
     if (
         cursoNormalizado.includes("biotecnologia")
@@ -230,19 +200,19 @@ function selecionarPDF(curso) {
             "biotecnologia",
             "plano_de_curso.pdf"
         );
-
     }
 
-
     return null;
-
 }
-
 
 // ======================================================
 // GERAR ROTEIRO COM IA
 // ======================================================
-async function gerarDesenvolvimento(dados, trechoPDF) {
+
+async function gerarDesenvolvimento(
+    dados,
+    trechoPDF
+) {
 
     const prompt = `
 
@@ -254,13 +224,9 @@ em uma redação pedagógica curta, profissional e objetiva.
 IMPORTANTE:
 
 NÃO ELABORE UMA AULA.
-
 NÃO PLANEJE UMA AULA.
-
 NÃO COMPLETE A AULA.
-
 NÃO CRIE UMA ATIVIDADE NOVA.
-
 NÃO AMPLIE A DESCRIÇÃO DO DOCENTE.
 
 A descrição do docente é o LIMITE da resposta.
@@ -283,9 +249,11 @@ Turma: ${dados.turma}
 Período: ${dados.data}
 
 Conteúdo informado pelo docente:
+
 ${dados.conteudo}
 
 Atividade informada pelo docente:
+
 ${dados.atividade}
 
 ========================================
@@ -372,11 +340,11 @@ Não acrescente ações que não foram informadas.
 FORMATO OBRIGATÓRIO
 ========================================
 
-**Estratégia:**
+Estratégia:
 
 [uma frase curta]
 
-**Atividade em sala:**
+Atividade em sala:
 
 [uma frase curta]
 
@@ -390,11 +358,11 @@ Entrada do professor:
 
 Resposta esperada:
 
-**Estratégia:**
+Estratégia:
 
 Aula expositiva e dialogada voltada para a finalização da estruturação em HTML e introdução aos conceitos de CSS.
 
-**Atividade em sala:**
+Atividade em sala:
 
 Desenvolvimento prático para conclusão da estrutura em HTML e aplicação inicial de estilos utilizando CSS.
 
@@ -406,21 +374,25 @@ avaliação, apresentação ou qualquer outra informação não mencionada.
 
 RETORNE SOMENTE A ESTRATÉGIA E A ATIVIDADE EM SALA.
 
+NÃO utilize Markdown.
+NÃO utilize asteriscos (*).
+NÃO utilize negrito.
+NÃO utilize qualquer formatação Markdown.
+Retorne apenas texto simples.
+
 `;
 
     const resposta =
         await client.responses.create({
-
             model: "gpt-5.6-luna",
-
             input: prompt
-
         });
 
     return resposta.output_text
-    .replace(/\*\*/g, "")
-    .trim();
+        .replace(/\*\*/g, "")
+        .trim();
 }
+
 // ======================================================
 // ROTA PRINCIPAL
 // ======================================================
@@ -431,13 +403,19 @@ app.post(
 
         try {
 
-            console.log("\n======================================");
-            console.log("NOVA SOLICITAÇÃO");
-            console.log("======================================");
+            console.log(
+                "\n======================================"
+            );
 
+            console.log(
+                "NOVA SOLICITAÇÃO"
+            );
+
+            console.log(
+                "======================================"
+            );
 
             const dados = req.body;
-
 
             // --------------------------------------------------
             // VALIDAR DADOS
@@ -446,15 +424,10 @@ app.post(
             if (!dados) {
 
                 return res.status(400).json({
-
                     sucesso: false,
-
                     erro: "Nenhum dado foi recebido."
-
                 });
-
             }
-
 
             if (
                 !dados.docente ||
@@ -468,22 +441,16 @@ app.post(
             ) {
 
                 return res.status(400).json({
-
                     sucesso: false,
-
                     erro: "Preencha todos os campos."
-
                 });
-
             }
-
 
             // --------------------------------------------------
             // FORMATAR DATA
             // --------------------------------------------------
 
             const meses = [
-
                 "janeiro",
                 "fevereiro",
                 "março",
@@ -496,9 +463,7 @@ app.post(
                 "outubro",
                 "novembro",
                 "dezembro"
-
             ];
-
 
             function formatarData(data) {
 
@@ -511,30 +476,39 @@ app.post(
                 const mes =
                     Number(partes[1]);
 
-
                 return `${dia} de ${meses[mes - 1]}`;
-
             }
-
 
             const dataInicio =
                 formatarData(
                     dados.dataInicio
                 );
 
-
             const dataFim =
                 formatarData(
                     dados.dataFim
                 );
-                console.log(dataFim, dataInicio)
-let intervalo = dataInicio;
-                if (dataInicio==dataFim){
-                    intervalo = `${dataInicio}`;
-                } else {
-                    intervalo = `${dataInicio} até ${dataFim}`;
-}
-console.log(intervalo)
+
+            console.log(
+                dataFim,
+                dataInicio
+            );
+
+            let intervalo = dataInicio;
+
+            if (dataInicio == dataFim) {
+
+                intervalo =
+                    `${dataInicio}`;
+
+            } else {
+
+                intervalo =
+                    `${dataInicio} até ${dataFim}`;
+            }
+
+            console.log(intervalo);
+
             // --------------------------------------------------
             // ESCOLHER PDF
             // --------------------------------------------------
@@ -544,26 +518,19 @@ console.log(intervalo)
                     dados.curso
                 );
 
-
             if (!caminhoPDF) {
 
                 return res.status(400).json({
-
                     sucesso: false,
-
                     erro:
                         "Não foi encontrado um plano de curso para esse curso."
-
                 });
-
             }
-
 
             console.log(
                 "Plano selecionado:",
                 caminhoPDF
             );
-
 
             // --------------------------------------------------
             // LER PDF
@@ -574,31 +541,23 @@ console.log(intervalo)
                     caminhoPDF
                 );
 
-
             const { PDFParse } =
                 require("pdf-parse");
 
-
             const parser =
                 new PDFParse({
-
                     data: arquivoPDF
-
                 });
-
 
             const resultadoPDF =
                 await parser.getText();
 
-
             const textoPDF =
                 resultadoPDF.text;
-
 
             console.log(
                 "PDF lido com sucesso."
             );
-
 
             // --------------------------------------------------
             // EXTRAIR TRECHO DA UC
@@ -610,11 +569,9 @@ console.log(intervalo)
                     dados.unidade_curricular
                 );
 
-
             console.log(
                 "Trecho relevante extraído."
             );
-
 
             // --------------------------------------------------
             // DADOS PARA A IA
@@ -642,9 +599,7 @@ console.log(intervalo)
 
                 atividade:
                     dados.atividade
-
             };
-
 
             // --------------------------------------------------
             // CHAMAR IA
@@ -654,18 +609,15 @@ console.log(intervalo)
                 "Gerando desenvolvimento com IA..."
             );
 
-
             const desenvolvimento =
                 await gerarDesenvolvimento(
                     dadosIA,
                     trechoPDF
                 );
 
-
             console.log(
                 "Desenvolvimento gerado."
             );
-
 
             // --------------------------------------------------
             // CHAMAR API FLASK
@@ -675,19 +627,20 @@ console.log(intervalo)
                 "Enviando dados para API Flask..."
             );
 
+            console.log(
+                "URL da API Flask:",
+                FLASK_API_URL
+            );
 
             const respostaWord =
                 await fetch(
-                    "http://127.0.0.1:5000/gerar-pdf",
+                    `${FLASK_API_URL}/gerar-pdf`,
                     {
-
                         method: "POST",
 
                         headers: {
-
                             "Content-Type":
                                 "application/json"
-
                         },
 
                         body:
@@ -713,12 +666,9 @@ console.log(intervalo)
 
                                 desenvolvimento:
                                     desenvolvimento
-
                             })
-
                     }
                 );
-
 
             if (!respostaWord.ok) {
 
@@ -730,18 +680,12 @@ console.log(intervalo)
                     erro
                 );
 
-
                 return res.status(500).json({
-
                     sucesso: false,
-
                     erro:
                         "Erro ao gerar o documento Word."
-
                 });
-
             }
-
 
             // --------------------------------------------------
             // RECEBER WORD
@@ -752,11 +696,9 @@ console.log(intervalo)
                     await respostaWord.arrayBuffer()
                 );
 
-
             console.log(
                 "Documento recebido da API Flask."
             );
-
 
             // --------------------------------------------------
             // ENVIAR WORD PARA O NAVEGADOR
@@ -767,25 +709,20 @@ console.log(intervalo)
                 "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
             );
 
-
             res.setHeader(
                 "Content-Disposition",
                 'attachment; filename="roteiro_estudo_semanal.docx"'
             );
 
-
             res.send(buffer);
-
 
             console.log(
                 "Documento enviado para o navegador."
             );
 
-
             console.log(
                 "======================================\n"
             );
-
 
         } catch (erro) {
 
@@ -797,22 +734,15 @@ console.log(intervalo)
                 erro
             );
 
-
             res.status(500).json({
-
                 sucesso: false,
-
                 erro:
                     erro.message ||
                     "Erro interno do servidor."
-
             });
-
         }
-
     }
 );
-
 
 // ======================================================
 // INICIAR SERVIDOR
@@ -835,12 +765,11 @@ app.listen(
         );
 
         console.log(
-            `Servidor rodando em http://localhost:${PORTA}`
+            `Servidor rodando na porta ${PORTA}`
         );
 
         console.log(
             "======================================"
         );
-
     }
 );
