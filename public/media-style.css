@@ -222,3 +222,12 @@ transition: color 0.3s;
 color: #2980b9;
 text-decoration: underline;
 }
+
+.btn-adicionar {
+    background: #0066a1;
+    color: white;
+}
+
+.btn-adicionar:hover {
+    background: #00517e;
+}

@@ -4,11 +4,80 @@ const listaAlunos = document.getElementById("listaAlunos");
 const areaTabela = document.getElementById("areaTabela");
 const novaLista = document.getElementById("novaLista");
 const exportar = document.getElementById("exportar");
-
+const adicionarAluno = document.getElementById("adicionarAluno");
 
 /* =========================================
    CRIAR LISTA DE ALUNOS
 ========================================= */
+function adicionarNovaLinha() {
+
+    const numero =
+        listaAlunos.querySelectorAll("tr").length + 1;
+
+    const linha = document.createElement("tr");
+
+    linha.innerHTML = `
+
+        <td>${numero}</td>
+
+        <td>
+            <input
+                type="text"
+                class="nome"
+                placeholder="Nome do aluno"
+            >
+        </td>
+
+        <td>
+            <input
+                type="number"
+                class="media"
+                min="0"
+                max="10"
+                step="0.01"
+                placeholder="0,00"
+            >
+        </td>
+
+        <td>
+            <select class="fez-paralela">
+
+                <option value="nao">
+                    Não
+                </option>
+
+                <option value="sim">
+                    Sim
+                </option>
+
+            </select>
+        </td>
+
+        <td>
+            <input
+                type="number"
+                class="paralela"
+                min="0"
+                max="10"
+                step="0.01"
+                placeholder="0,00"
+                disabled
+            >
+        </td>
+
+        <td class="resultado">
+            Aguardando dados
+        </td>
+
+    `;
+
+    listaAlunos.appendChild(linha);
+
+    configurarLinha(linha);
+}
+adicionarAluno.addEventListener("click", function () {
+    adicionarNovaLinha();
+});
 
 criarLista.addEventListener("click", function () {
 
