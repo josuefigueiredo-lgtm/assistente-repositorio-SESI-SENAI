@@ -171,129 +171,69 @@ CÁLCULO
 ========================================== */
 
 function calcular(linha) {
+    const mediaInput = linha.querySelector(".media");
+    const paralelaInput = linha.querySelector(".paralela");
+    const fezParalela = linha.querySelector(".fez-paralela").value;
+    const resultado = linha.querySelector(".resultado");
 
-const mediaInput = linha.querySelector(".media");
-const fezParalela = linha.querySelector(".fez-paralela");
-const paralelaInput = linha.querySelector(".paralela");
-const resultado = linha.querySelector(".resultado");
+    const media = parseFloat(mediaInput.value);
+    const paralela = parseFloat(paralelaInput.value);
 
-
-const media = Number(mediaInput.value);
-
-
-/* ==========================================
-   SEM MÉDIA INFORMADA
-   ========================================== */
-
-if (mediaInput.value === "") {
-
-    resultado.textContent = "Aguardando dados";
-
-    resultado.className =
-        "resultado aguardando";
-
-    return;
-}
-
-
-/* ==========================================
-   SE FEZ PARALELA
-   ========================================== */
-
-if (fezParalela.value === "sim") {
-
-    /* -------------------------------
-       AINDA NÃO INFORMOU A PARALELA
-       ------------------------------- */
-
-    if (paralelaInput.value === "") {
-
-        resultado.textContent =
-            "Aguardando nota da paralela";
-
-        resultado.className =
-            "resultado aguardando";
-
+    // Se a média ainda não foi informada
+    if (isNaN(media)) {
+        resultado.textContent = "Aguardando dados";
         return;
     }
 
-
-    const paralela = Number(
-        paralelaInput.value
-    );
-
-
-    /* -------------------------------
-       PARALELA ABAIXO DE 1,66
-       ------------------------------- */
-
-    if (paralela < 1.66) {
-
-        resultado.textContent =
-            "Sem direito à avaliação final";
-
-        resultado.className =
-            "resultado sem-direito";
-
+    // Média maior que 6: não faz avaliação final
+    if (media > 6) {
+        resultado.textContent = "Não faz avaliação final";
         return;
     }
 
+    // Média menor que 1,666
+    if (media < 1.666) {
 
-    /* -------------------------------
-       PARALELA É MAIOR QUE A MÉDIA
-       ------------------------------- */
+        // Ainda não fez a paralela
+        if (fezParalela === "nao") {
+            resultado.textContent = "Deve fazer a paralela";
+            return;
+        }
 
-    if (paralela > media) {
+        // Fez paralela, mas não informou a nota
+        if (isNaN(paralela)) {
+            resultado.textContent = "Informe a nota da paralela";
+            return;
+        }
 
-        const avaliacaoFinal =
-            (50 - (6 * paralela)) / 4;
-
-        resultado.textContent =
-            avaliacaoFinal.toFixed(2);
-
-        resultado.className =
-            "resultado permitido";
-
-        return;
+        // Paralela abaixo de 1,666
+        if (paralela < 1.666) {
+            resultado.textContent = "Sem direito à avaliação final";
+            return;
+        }
     }
 
-}
+    // Por padrão, utiliza a média final
+    let mediaBase = media;
 
+    // Se fez paralela
+    if (fezParalela === "sim") {
 
-/* ==========================================
-   SEM PARALELA OU PARALELA NÃO SUPERIOR
-   ========================================== */
+        if (isNaN(paralela)) {
+            resultado.textContent = "Informe a nota da paralela";
+            return;
+        }
 
-/* Se a média estiver abaixo de 1,66
-   e não houve uma paralela válida
-   para substituir a média */
+        // A paralela só substitui a média se for MAIOR
+        if (paralela > media) {
+            mediaBase = paralela;
+        }
+    }
 
-if (media < 1.66) {
+    // Cálculo da avaliação final
+    const notaFinal = (50 - (6 * mediaBase)) / 4;
 
-    resultado.textContent =
-        "Sem direito à avaliação final";
-
-    resultado.className =
-        "resultado sem-direito";
-
-    return;
-}
-
-
-/* ==========================================
-   CÁLCULO PELA MÉDIA FINAL
-   ========================================== */
-
-const avaliacaoFinal =
-    (50 - (6 * media)) / 4;
-
-
-resultado.textContent =
-    avaliacaoFinal.toFixed(2);
-
-resultado.className =
-    "resultado permitido";
-
+    resultado.textContent = `Nota necessária: ${notaFinal.toFixed(2)}`;
 }
 /* ==========================================
 NOVA LISTA
