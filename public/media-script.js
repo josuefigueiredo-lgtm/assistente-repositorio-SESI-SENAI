@@ -1,126 +1,103 @@
-const quantidade = document.getElementById("quantidade");
-const btnCriar = document.getElementById("btnCriar");
-
-const configuracao = document.getElementById("configuracao");
-const areaAlunos = document.getElementById("areaAlunos");
-
+const criarLista = document.getElementById("criarLista");
+const quantidadeInput = document.getElementById("quantidade");
 const listaAlunos = document.getElementById("listaAlunos");
-const btnNovaLista = document.getElementById("btnNovaLista");
-
-/* ==========================================
-CRIAR LISTA DE ALUNOS
-========================================== */
-
-btnCriar.addEventListener("click", function () {
+const areaTabela = document.getElementById("areaTabela");
+const novaLista = document.getElementById("novaLista");
+const exportar = document.getElementById("exportar");
 
 
-const total = Number(quantidade.value);
+/* =========================================
+   CRIAR LISTA DE ALUNOS
+========================================= */
 
-if (!total || total < 1) {
-    alert("Informe uma quantidade válida de alunos.");
-    return;
-}
+criarLista.addEventListener("click", function () {
 
-listaAlunos.innerHTML = "";
+    const quantidade = parseInt(quantidadeInput.value);
 
-for (let i = 1; i <= total; i++) {
+    if (!quantidade || quantidade < 1) {
+        alert("Informe uma quantidade válida de alunos.");
+        return;
+    }
 
-    const linha = document.createElement("tr");
+    listaAlunos.innerHTML = "";
 
-    linha.innerHTML = `
+    for (let i = 1; i <= quantidade; i++) {
 
-        <td>
-            ${i}
-        </td>
+        const linha = document.createElement("tr");
 
-        <td>
-            <input
-                type="text"
-                class="nome"
-                placeholder="Nome do aluno"
-            >
-        </td>
+        linha.innerHTML = `
 
-        <td>
-            <input
-                type="number"
-                class="media"
-                min="0"
-                max="10"
-                step="0.01"
-                placeholder="0,00"
-            >
-        </td>
+            <td>${i}</td>
 
-        <td>
+            <td>
+                <input
+                    type="text"
+                    class="nome"
+                    placeholder="Nome do aluno"
+                >
+            </td>
 
-            <select class="fez-paralela">
+            <td>
+                <input
+                    type="number"
+                    class="media"
+                    min="0"
+                    max="10"
+                    step="0.01"
+                    placeholder="0,00"
+                >
+            </td>
 
-                <option value="nao">
-                    Não
-                </option>
+            <td>
+                <select class="fez-paralela">
 
-                <option value="sim">
-                    Sim
-                </option>
+                    <option value="nao">
+                        Não
+                    </option>
 
-            </select>
+                    <option value="sim">
+                        Sim
+                    </option>
 
-        </td>
+                </select>
+            </td>
 
-        <td>
+            <td>
+                <input
+                    type="number"
+                    class="paralela"
+                    min="0"
+                    max="10"
+                    step="0.01"
+                    placeholder="0,00"
+                    disabled
+                >
+            </td>
 
-            <input
-                type="number"
-                class="paralela"
-                min="0"
-                max="10"
-                step="0.01"
-                placeholder="0,00"
-                disabled
-            >
+            <td class="resultado">
+                Aguardando dados
+            </td>
 
-        </td>
+        `;
 
-        <td class="resultado aguardando">
-            Aguardando dados
-        </td>
+        listaAlunos.appendChild(linha);
 
-    `;
+        configurarLinha(linha);
+    }
 
-    listaAlunos.appendChild(linha);
-}
-
-
-configurarEventos();
-
-configuracao.style.display = "none";
-
-areaAlunos.style.display = "block";
-
-
+    areaTabela.style.display = "block";
 });
 
-/* ==========================================
-EVENTOS DAS LINHAS
-========================================== */
 
-function configurarEventos() {
+/* =========================================
+   CONFIGURAR CADA LINHA
+========================================= */
 
-
-const linhas = document.querySelectorAll("#listaAlunos tr");
-
-linhas.forEach(function (linha) {
+function configurarLinha(linha) {
 
     const media = linha.querySelector(".media");
     const fezParalela = linha.querySelector(".fez-paralela");
     const paralela = linha.querySelector(".paralela");
-    const resultado = linha.querySelector(".resultado");
-
-
-    /* ----------------------------------
-       ALTERAÇÃO DA PARARELA
-       ---------------------------------- */
 
     fezParalela.addEventListener("change", function () {
 
@@ -136,41 +113,24 @@ linhas.forEach(function (linha) {
         }
 
         calcular(linha);
-
     });
-
-
-    /* ----------------------------------
-       ALTERAÇÃO DA MÉDIA
-       ---------------------------------- */
 
     media.addEventListener("input", function () {
-
         calcular(linha);
-
     });
-
-
-    /* ----------------------------------
-       ALTERAÇÃO DA NOTA DA PARALELA
-       ---------------------------------- */
 
     paralela.addEventListener("input", function () {
-
         calcular(linha);
-
     });
-
-});
-
-
 }
 
-/* ==========================================
-CÁLCULO
-========================================== */
+
+/* =========================================
+   CÁLCULO DA AVALIAÇÃO FINAL
+========================================= */
 
 function calcular(linha) {
+
     const mediaInput = linha.querySelector(".media");
     const paralelaInput = linha.querySelector(".paralela");
     const fezParalela = linha.querySelector(".fez-paralela").value;
@@ -179,76 +139,355 @@ function calcular(linha) {
     const media = parseFloat(mediaInput.value);
     const paralela = parseFloat(paralelaInput.value);
 
-    // Se a média ainda não foi informada
+
+    /* =========================================
+       MÉDIA NÃO INFORMADA
+    ========================================= */
+
     if (isNaN(media)) {
+
         resultado.textContent = "Aguardando dados";
+
         return;
     }
 
-    // Média maior que 6: não faz avaliação final
+
+    /* =========================================
+       MÉDIA MAIOR QUE 6
+    ========================================= */
+
     if (media > 6) {
-        resultado.textContent = "Não faz avaliação final";
+
+        resultado.textContent =
+            "Não faz avaliação final";
+
         return;
     }
 
-    // Média menor que 1,666
+
+    /* =========================================
+       MÉDIA MENOR QUE 1,666
+    ========================================= */
+
     if (media < 1.666) {
 
-        // Ainda não fez a paralela
+        /*
+            Se ainda não fez a paralela,
+            precisa realizar a paralela.
+        */
+
         if (fezParalela === "nao") {
-            resultado.textContent = "Deve fazer a paralela";
+
+            resultado.textContent =
+                "Deve fazer a paralela";
+
             return;
         }
 
-        // Fez paralela, mas não informou a nota
+
+        /*
+            Fez a paralela, mas não informou
+            a nota.
+        */
+
         if (isNaN(paralela)) {
-            resultado.textContent = "Informe a nota da paralela";
+
+            resultado.textContent =
+                "Informe a nota da paralela";
+
             return;
         }
 
-        // Paralela abaixo de 1,666
+
+        /*
+            Paralela abaixo de 1,666:
+            sem direito à avaliação final.
+        */
+
         if (paralela < 1.666) {
-            resultado.textContent = "Sem direito à avaliação final";
+
+            resultado.textContent =
+                "Sem direito à avaliação final";
+
             return;
         }
     }
 
-    // Por padrão, utiliza a média final
+
+    /* =========================================
+       DEFINIR A MÉDIA QUE SERÁ UTILIZADA
+    ========================================= */
+
     let mediaBase = media;
 
-    // Se fez paralela
+
     if (fezParalela === "sim") {
 
+        /*
+            Se marcou que fez paralela,
+            mas não informou a nota.
+        */
+
         if (isNaN(paralela)) {
-            resultado.textContent = "Informe a nota da paralela";
+
+            resultado.textContent =
+                "Informe a nota da paralela";
+
             return;
         }
 
-        // A paralela só substitui a média se for MAIOR
+
+        /*
+            Se alcançou 6 ou mais na paralela,
+            não precisa fazer avaliação final.
+        */
+
+        if (paralela >= 6) {
+
+            resultado.textContent =
+                "Não faz avaliação final";
+
+            return;
+        }
+
+
+        /*
+            A paralela só substitui a média
+            se for MAIOR que a Média Final.
+        */
+
         if (paralela > media) {
+
             mediaBase = paralela;
         }
     }
 
-    // Cálculo da avaliação final
-    const notaFinal = (50 - (6 * mediaBase)) / 4;
 
-    resultado.textContent = `Nota necessária: ${notaFinal.toFixed(2)}`;
+    /* =========================================
+       CALCULAR NOTA DA AVALIAÇÃO FINAL
+    ========================================= */
+
+    const notaFinal =
+        (50 - (6 * mediaBase)) / 4;
+
+
+    resultado.textContent =
+        `Nota necessária: ${notaFinal.toFixed(2)}`;
 }
-/* ==========================================
-NOVA LISTA
-========================================== */
-
-btnNovaLista.addEventListener("click", function () {
 
 
-quantidade.value = "";
+/* =========================================
+   NOVA LISTA
+========================================= */
 
-listaAlunos.innerHTML = "";
+novaLista.addEventListener("click", function () {
 
-areaAlunos.style.display = "none";
+    listaAlunos.innerHTML = "";
 
-configuracao.style.display = "block";
+    areaTabela.style.display = "none";
 
+    quantidadeInput.value = "";
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+});
+
+
+/* =========================================
+   EXPORTAR PARA EXCEL
+========================================= */
+
+exportar.addEventListener("click", function () {
+
+    const linhas =
+        document.querySelectorAll("#tabelaAlunos tbody tr");
+
+
+    if (linhas.length === 0) {
+
+        alert("Não há alunos para exportar.");
+
+        return;
+    }
+
+
+    const dados = [];
+
+
+    linhas.forEach(function (linha, index) {
+
+        const nome =
+            linha.querySelector(".nome").value;
+
+        const mediaTexto =
+            linha.querySelector(".media").value;
+
+        const fezParalela =
+            linha.querySelector(".fez-paralela").value;
+
+        const paralelaTexto =
+            linha.querySelector(".paralela").value;
+
+        const resultado =
+            linha.querySelector(".resultado").textContent;
+
+
+        const media =
+            parseFloat(mediaTexto);
+
+        const paralela =
+            parseFloat(paralelaTexto);
+
+
+        let mediaUsada = "";
+        let notaFinal = "";
+
+
+        /* =========================================
+           DEFINIR NOTA USADA
+        ========================================= */
+
+        if (!isNaN(media)) {
+
+            /*
+                Se a média final for maior que 6,
+                não existe avaliação final.
+            */
+
+            if (media > 6) {
+
+                mediaUsada = media;
+
+            } else {
+
+                /*
+                    A paralela só substitui a média
+                    se for MAIOR.
+                */
+
+                if (
+                    fezParalela === "sim" &&
+                    !isNaN(paralela) &&
+                    paralela > media
+                ) {
+
+                    mediaUsada = paralela;
+
+                } else {
+
+                    mediaUsada = media;
+                }
+            }
+
+
+            /* =========================================
+               CALCULAR NOTA DA AVALIAÇÃO FINAL
+            ========================================= */
+
+            /*
+                Se a paralela alcançou 6,
+                não faz avaliação final.
+            */
+
+            if (
+                fezParalela === "sim" &&
+                !isNaN(paralela) &&
+                paralela >= 6
+            ) {
+
+                notaFinal = "";
+
+            } else if (
+                mediaUsada >= 1.666 &&
+                mediaUsada <= 6
+            ) {
+
+                notaFinal =
+                    ((50 - (6 * mediaUsada)) / 4)
+                    .toFixed(2);
+            }
+        }
+
+
+        /* =========================================
+           ADICIONAR DADOS À PLANILHA
+        ========================================= */
+
+        dados.push({
+
+            "Nº": index + 1,
+
+            "Nome do aluno": nome,
+
+            "Média Final": mediaTexto,
+
+            "Fez Paralela?":
+                fezParalela === "sim"
+                    ? "Sim"
+                    : "Não",
+
+            "Nota da Paralela":
+                paralelaTexto,
+
+            "Nota usada":
+                mediaUsada,
+
+            "Avaliação Final":
+                notaFinal,
+
+            "Situação":
+                resultado
+        });
+
+    });
+
+
+    /* =========================================
+       CRIAR PLANILHA
+    ========================================= */
+
+    const planilha =
+        XLSX.utils.json_to_sheet(dados);
+
+
+    /* =========================================
+       LARGURA DAS COLUNAS
+    ========================================= */
+
+    planilha["!cols"] = [
+
+        { wch: 6 },
+        { wch: 30 },
+        { wch: 15 },
+        { wch: 18 },
+        { wch: 20 },
+        { wch: 15 },
+        { wch: 20 },
+        { wch: 35 }
+
+    ];
+
+
+    /* =========================================
+       CRIAR ARQUIVO EXCEL
+    ========================================= */
+
+    const arquivo =
+        XLSX.utils.book_new();
+
+
+    XLSX.utils.book_append_sheet(
+        arquivo,
+        planilha,
+        "Média Final"
+    );
+
+
+    XLSX.writeFile(
+        arquivo,
+        "resultado_media_final.xlsx"
+    );
 
 });

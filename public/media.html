@@ -1,98 +1,52 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-```
-<meta charset="UTF-8">
+    <title>Calculadora de Média - Assistente Pedagógico</title>
 
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
->
+    <link rel="stylesheet" href="media-style.css">
 
-<title>Calculadora de Média Final</title>
-
-<link
-    rel="stylesheet"
-    href="media-style.css"
->
-```
-
+    <!-- Biblioteca para exportação Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
 </head>
 
 <body>
 
-```
-<main class="container">
+    <main class="container">
 
-    <section class="card">
+        <a href="index.html" class="voltar">← Voltar</a>
 
-        <header class="header">
+        <header>
+            <div class="logo">SENAI</div>
 
-            <a
-                href="index.html"
-                class="voltar"
-            >
-                ← Voltar
-            </a>
-
-            <div class="titulo">
-
-                <div class="logo">
-                    SENAI
-                </div>
-
-                <div>
-
-                    <h1>
-                        Calculadora de Média
-                    </h1>
-
-                    <p>
-                        Cálculo da nota necessária na avaliação final
-                    </p>
-
-                </div>
-
-            </div>
-
-        </header>
-
-
-        <!-- QUANTIDADE DE ALUNOS -->
-
-        <section
-            id="configuracao"
-            class="configuracao"
-        >
-
-            <h2>
-                Quantidade de alunos
-            </h2>
+            <h1>Calculadora de Média</h1>
 
             <p>
-                Informe quantos alunos participarão da paralela.
+                Cálculo da nota necessária na avaliação final
+            </p>
+        </header>
+
+        <section class="configuracao">
+
+            <h2>Lista de alunos</h2>
+
+            <p>
+                Informe a quantidade de alunos que farão a paralela:
             </p>
 
-            <div class="campo-config">
-
-                <label for="quantidade">
-                    Número de alunos
-                </label>
+            <div class="config-input">
 
                 <input
                     type="number"
                     id="quantidade"
                     min="1"
-                    placeholder="Ex.: 10"
+                    placeholder="Quantidade de alunos"
                 >
 
-                <button
-                    type="button"
-                    id="btnCriar"
-                >
+                <button id="criarLista">
                     Criar lista
                 </button>
 
@@ -100,78 +54,50 @@
 
         </section>
 
+        <section id="areaTabela" class="area-tabela">
 
-        <!-- TABELA -->
+            <div class="tabela-header">
 
-        <section
-            id="areaAlunos"
-            class="area-alunos"
-            style="display: none;"
-        >
+                <h2>Alunos</h2>
 
-            <div class="topo-tabela">
+                <div class="botoes">
 
-                <div>
+                    <button
+                        id="exportar"
+                        class="btn-exportar"
+                    >
+                        Exportar Excel
+                    </button>
 
-                    <h2>
-                        Alunos
-                    </h2>
-
-                    <p>
-                        Preencha os dados de cada aluno.
-                    </p>
+                    <button
+                        id="novaLista"
+                        class="btn-nova-lista"
+                    >
+                        Nova lista
+                    </button>
 
                 </div>
 
-                <button
-                    type="button"
-                    id="btnNovaLista"
-                    class="btn-secundario"
-                >
-                    Nova lista
-                </button>
-
             </div>
-
 
             <div class="tabela-container">
 
-                <table>
+                <table id="tabelaAlunos">
 
                     <thead>
 
                         <tr>
-
-                            <th>
-                                #
-                            </th>
-
-                            <th>
-                                Nome do aluno
-                            </th>
-
-                            <th>
-                                Média Final
-                            </th>
-
-                            <th>
-                                Fez Paralela?
-                            </th>
-
-                            <th>
-                                Nota da Paralela
-                            </th>
-
-                            <th>
-                                Avaliação Final
-                            </th>
-
+                            <th>#</th>
+                            <th>Nome do aluno</th>
+                            <th>Média Final</th>
+                            <th>Fez Paralela?</th>
+                            <th>Nota da Paralela</th>
+                            <th>Avaliação Final</th>
                         </tr>
 
                     </thead>
 
                     <tbody id="listaAlunos">
-
                     </tbody>
 
                 </table>
@@ -180,12 +106,9 @@
 
         </section>
 
-    </section>
+    </main>
 
-</main>
-
-
-<footer class="site-footer">
+    <footer class="site-footer">
 
     <div class="footer-container">
 
@@ -212,16 +135,13 @@
             >
                 (77) 98121-6929
             </a>
-
         </p>
 
     </div>
 
 </footer>
 
-
-<script src="media-script.js"></script>
-```
+    <script src="media-script.js"></script>
 
 </body>
 
