@@ -1,232 +1,151 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+```
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>Assistente Pedagógico SENAI</title>
+<title>Assistente Pedagógico SENAI</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+```
+
 </head>
 
 <body>
 
-    <main class="container">
+```
+<main class="container">
 
-        <section class="card">
+    <section class="card">
 
-            <header class="header">
+        <header class="header">
 
-                <div class="logo">
-                    SENAI
+            <div class="logo">
+                SENAI
+            </div>
+
+            <div>
+                <h1>
+                    Assistente Pedagógico
+                </h1>
+
+                <p>
+                    Ferramentas para auxiliar o docente
+                </p>
+            </div>
+
+        </header>
+
+
+        <section class="opcoes">
+
+            <a
+                href="roteiro.html"
+                class="opcao"
+            >
+
+                <div class="icone">
+                    📄
                 </div>
 
-                <div>
-                    <h1>
-                        Assistente Pedagógico
-                    </h1>
+                <div class="opcao-conteudo">
+
+                    <h2>
+                        Gerar Roteiro de Estudo
+                    </h2>
 
                     <p>
-                        Gerador de Roteiro de Estudo Semanal
+                        Gere o Roteiro de Estudo Semanal
+                        de acordo com as informações da aula.
                     </p>
-                </div>
-
-            </header>
-
-
-            <form id="formRoteiro">
-
-                <div class="campo">
-
-                    <label for="docente">
-                        Nome do docente
-                    </label>
-
-                    <input
-                        type="text"
-                        id="docente"
-                        placeholder="Digite o nome do docente"
-                        required
-                    >
 
                 </div>
 
+                <div class="seta">
+                    →
+                </div>
 
-                <div class="campo">
+            </a>
 
-                    <label for="unidade">
-                        Unidade Curricular
-                    </label>
 
-                    <input
-                        type="text"
-                        id="unidade"
-                        placeholder="Ex.: Projeto de Front-End"
-                        required
-                    >
+            <a
+                href="media.html"
+                class="opcao"
+            >
+
+                <div class="icone">
+                    📊
+                </div>
+
+                <div class="opcao-conteudo">
+
+                    <h2>
+                        Calcular Média Final
+                    </h2>
+
+                    <p>
+                        Calcule a média final dos estudantes
+                        de forma rápida e prática.
+                    </p>
 
                 </div>
 
-
-                <div class="linha">
-
-                    <div class="campo">
-
-                        <label for="curso">
-                            Curso
-                        </label>
-
-                        <select
-                            id="curso"
-                            required
-                        >
-
-                            <option value="">
-                                Selecione o curso
-                            </option>
-
-                            <option value="Informatica">
-                                Informática
-                            </option>
-
-                            <option value="Biotecnologia">
-                                Biotecnologia
-                            </option>
-
-                        </select>
-
-                    </div>
-
-
-                    <div class="campo">
-
-                        <label for="turma">
-                            Turma
-                        </label>
-
-                        <input
-                            type="text"
-                            id="turma"
-                            placeholder="Ex.: 2º D"
-                            required
-                        >
-
-                    </div>
-
+                <div class="seta">
+                    →
                 </div>
 
-
-               <div class="linha">
-
-    <div class="campo">
-
-        <label for="dataInicio">
-            Data inicial
-        </label>
-
-        <input
-            type="date"
-            id="dataInicio"
-            required
-        >
-
-    </div>
-
-
-    <div class="campo">
-
-        <label for="dataFim">
-            Data final
-        </label>
-
-        <input
-            type="date"
-            id="dataFim"
-            required
-        >
-
-    </div>
-
-</div>
-
-
-                <div class="campo">
-
-                    <label for="conteudo">
-                        Conteúdo
-                    </label>
-
-                    <textarea
-                        id="conteudo"
-                        placeholder="Informe o conteúdo que será trabalhado na aula"
-                        rows="3"
-                        required
-                    ></textarea>
-
-                </div>
-
-
-                <div class="campo">
-
-                    <label for="atividade">
-                        Atividade
-                    </label>
-
-                    <textarea
-                        id="atividade"
-                        placeholder="Descreva a atividade que será realizada pelos estudantes"
-                        rows="4"
-                        required
-                    ></textarea>
-
-                </div>
-
-
-                <button
-                    type="submit"
-                    id="btnGerar"
-                >
-                    Gerar roteiro
-                </button>
-
-
-                <div
-                    id="mensagem"
-                    class="mensagem"
-                ></div>
-
-            </form>
+            </a>
 
         </section>
 
-    </main>
+    </section>
 
-    <footer class="site-footer">
-        <div class="footer-container">
-            <p>&copy; 2026 Josué Rodrigo. Todos os direitos reservados.</p>
-            <p>
-                ✉️ E-mail para contato: 
-                <a href="mailto:josue.figueiredo@ba.docente.senai.br">josue.figueiredo@ba.docente.senai.br</a>
-            </p>
-            <p>
-                <span class="whatsapp-icon">📱</span> WhatsApp: 
-                <!-- O link 'wa.me' com o 55 antes do DDD redireciona direto para o seu WhatsApp -->
-                <a href="https://wa.me/5577981216929" target="_blank" rel="noopener noreferrer">
-                    (77) 98121-6929
-                </a>
-            </p>
-        </div>
-    </footer>
+</main>
 
-    <script src="script.js"></script>
+
+<footer class="site-footer">
+
+    <div class="footer-container">
+
+        <p>
+            &copy; 2026 Josué Rodrigo.
+            Todos os direitos reservados.
+        </p>
+
+        <p>
+            ✉️ E-mail para contato:
+            <a href="mailto:josue.figueiredo@ba.docente.senai.br">
+                josue.figueiredo@ba.docente.senai.br
+            </a>
+        </p>
+
+        <p>
+            <span class="whatsapp-icon">📱</span>
+            WhatsApp:
+
+            <a
+                href="https://wa.me/5577981216929"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                (77) 98121-6929
+            </a>
+        </p>
+
+    </div>
+
+</footer>
+```
 
 </body>
 

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Calculadora de Média Final</title>
+
+<link
+    rel="stylesheet"
+    href="media-style.css"
+>
+```
+
+</head>
+
+<body>
+
+```
+<main class="container">
+
+    <section class="card">
+
+        <header class="header">
+
+            <a
+                href="index.html"
+                class="voltar"
+            >
+                ← Voltar
+            </a>
+
+            <div class="titulo">
+
+                <div class="logo">
+                    SENAI
+                </div>
+
+                <div>
+
+                    <h1>
+                        Calculadora de Média
+                    </h1>
+
+                    <p>
+                        Cálculo da nota necessária na avaliação final
+                    </p>
+
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- QUANTIDADE DE ALUNOS -->
+
+        <section
+            id="configuracao"
+            class="configuracao"
+        >
+
+            <h2>
+                Quantidade de alunos
+            </h2>
+
+            <p>
+                Informe quantos alunos participarão da paralela.
+            </p>
+
+            <div class="campo-config">
+
+                <label for="quantidade">
+                    Número de alunos
+                </label>
+
+                <input
+                    type="number"
+                    id="quantidade"
+                    min="1"
+                    placeholder="Ex.: 10"
+                >
+
+                <button
+                    type="button"
+                    id="btnCriar"
+                >
+                    Criar lista
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- TABELA -->
+
+        <section
+            id="areaAlunos"
+            class="area-alunos"
+            style="display: none;"
+        >
+
+            <div class="topo-tabela">
+
+                <div>
+
+                    <h2>
+                        Alunos
+                    </h2>
+
+                    <p>
+                        Preencha os dados de cada aluno.
+                    </p>
+
+                </div>
+
+                <button
+                    type="button"
+                    id="btnNovaLista"
+                    class="btn-secundario"
+                >
+                    Nova lista
+                </button>
+
+            </div>
+
+
+            <div class="tabela-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                #
+                            </th>
+
+                            <th>
+                                Nome do aluno
+                            </th>
+
+                            <th>
+                                Média Final
+                            </th>
+
+                            <th>
+                                Fez Paralela?
+                            </th>
+
+                            <th>
+                                Nota da Paralela
+                            </th>
+
+                            <th>
+                                Avaliação Final
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="listaAlunos">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </section>
+
+</main>
+
+
+<footer class="site-footer">
+
+    <div class="footer-container">
+
+        <p>
+            &copy; 2026 Josué Rodrigo.
+            Todos os direitos reservados.
+        </p>
+
+        <p>
+            ✉️ E-mail para contato:
+            <a href="mailto:josue.figueiredo@ba.docente.senai.br">
+                josue.figueiredo@ba.docente.senai.br
+            </a>
+        </p>
+
+        <p>
+            <span class="whatsapp-icon">📱</span>
+            WhatsApp:
+
+            <a
+                href="https://wa.me/5577981216929"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                (77) 98121-6929
+            </a>
+
+        </p>
+
+    </div>
+
+</footer>
+
+
+<script src="media-script.js"></script>
+```
+
+</body>
+
+</html>

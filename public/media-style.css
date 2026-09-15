@@ -1,0 +1,531 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  }
+
+body {
+font-family: Arial, Helvetica, sans-serif;
+background: #f3f5f7;
+color: #222;
+min-height: 100vh;
+
+
+display: flex;
+flex-direction: column;
+
+
+}
+
+/* ==============================
+CONTAINER
+============================== */
+
+.container {
+width: 100%;
+max-width: 1200px;
+margin: 0 auto;
+
+
+flex: 1;
+
+padding: 30px;
+
+
+}
+
+/* ==============================
+CARD
+============================== */
+
+.card {
+background: white;
+
+
+border-radius: 16px;
+
+padding: 35px;
+
+width: 100%;
+
+box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+
+
+}
+
+/* ==============================
+CABEÇALHO
+============================== */
+
+.header {
+margin-bottom: 35px;
+
+
+padding-bottom: 25px;
+
+border-bottom: 1px solid #e5e5e5;
+
+
+}
+
+.voltar {
+display: inline-block;
+
+
+margin-bottom: 22px;
+
+color: #0066a1;
+
+text-decoration: none;
+
+font-weight: bold;
+
+font-size: 14px;
+
+
+}
+
+.voltar:hover {
+text-decoration: underline;
+}
+
+.titulo {
+display: flex;
+align-items: center;
+
+
+gap: 18px;
+
+
+}
+
+.logo {
+width: 70px;
+height: 70px;
+
+
+border-radius: 12px;
+
+background: #0066a1;
+
+color: white;
+
+display: flex;
+align-items: center;
+justify-content: center;
+
+font-weight: bold;
+font-size: 20px;
+
+flex-shrink: 0;
+
+
+}
+
+.titulo h1 {
+font-size: 26px;
+
+
+margin-bottom: 6px;
+
+
+}
+
+.titulo p {
+color: #666;
+
+
+font-size: 15px;
+
+
+}
+
+/* ==============================
+CONFIGURAÇÃO
+============================== */
+
+.configuracao {
+max-width: 500px;
+
+
+margin: 0 auto;
+
+text-align: center;
+
+
+}
+
+.configuracao h2 {
+font-size: 21px;
+
+
+margin-bottom: 8px;
+
+
+}
+
+.configuracao p {
+color: #666;
+
+
+font-size: 14px;
+
+margin-bottom: 25px;
+
+
+}
+
+.campo-config {
+display: flex;
+flex-direction: column;
+
+
+gap: 10px;
+
+text-align: left;
+
+
+}
+
+.campo-config label {
+font-weight: bold;
+
+
+font-size: 14px;
+
+
+}
+
+input,
+select {
+width: 100%;
+
+
+border: 1px solid #d5d9dd;
+
+border-radius: 8px;
+
+padding: 12px 14px;
+
+font-family: inherit;
+
+font-size: 15px;
+
+outline: none;
+
+background: white;
+
+
+}
+
+input:focus,
+select:focus {
+border-color: #0066a1;
+
+
+box-shadow:
+    0 0 0 3px rgba(0, 102, 161, 0.10);
+
+
+}
+
+button {
+border: none;
+
+
+border-radius: 8px;
+
+padding: 13px 18px;
+
+background: #0066a1;
+
+color: white;
+
+font-size: 15px;
+
+font-weight: bold;
+
+cursor: pointer;
+
+transition:
+    background 0.2s,
+    transform 0.1s;
+
+
+}
+
+button:hover {
+background: #00517f;
+}
+
+button:active {
+transform: scale(0.99);
+}
+
+.campo-config button {
+width: 100%;
+
+
+margin-top: 8px;
+
+
+}
+
+/* ==============================
+ÁREA DOS ALUNOS
+============================== */
+
+.area-alunos {
+width: 100%;
+}
+
+.topo-tabela {
+display: flex;
+
+
+justify-content: space-between;
+
+align-items: center;
+
+margin-bottom: 20px;
+
+
+}
+
+.topo-tabela h2 {
+font-size: 21px;
+
+
+margin-bottom: 5px;
+
+
+}
+
+.topo-tabela p {
+color: #666;
+
+
+font-size: 14px;
+
+
+}
+
+.btn-secundario {
+background: #e9eef2;
+
+
+color: #0066a1;
+
+
+}
+
+.btn-secundario:hover {
+background: #dce5eb;
+}
+
+/* ==============================
+TABELA
+============================== */
+
+.tabela-container {
+width: 100%;
+
+
+overflow-x: auto;
+
+border: 1px solid #e1e5e8;
+
+border-radius: 10px;
+
+
+}
+
+table {
+width: 100%;
+
+
+border-collapse: collapse;
+
+min-width: 850px;
+
+
+}
+
+thead {
+background: #f1f5f7;
+}
+
+th {
+padding: 14px 12px;
+
+
+text-align: left;
+
+font-size: 13px;
+
+color: #444;
+
+border-bottom: 1px solid #dfe3e6;
+
+
+}
+
+td {
+padding: 10px 12px;
+
+
+border-bottom: 1px solid #e9ecef;
+
+font-size: 14px;
+
+vertical-align: middle;
+
+
+}
+
+tbody tr:last-child td {
+border-bottom: none;
+}
+
+tbody tr:hover {
+background: #fafcfd;
+}
+
+td input,
+td select {
+padding: 9px 10px;
+
+
+font-size: 14px;
+
+
+}
+
+/* ==============================
+RESULTADO
+============================== */
+
+.resultado {
+font-weight: bold;
+
+
+text-align: center;
+
+min-width: 160px;
+
+
+}
+
+.resultado.permitido {
+color: #0066a1;
+}
+
+.resultado.sem-direito {
+color: #c0392b;
+}
+
+.resultado.aguardando {
+color: #777;
+
+
+font-weight: normal;
+
+
+}
+
+/* ==============================
+RODAPÉ
+============================== */
+
+.site-footer {
+background-color: #2c3e50;
+
+
+color: #ecf0f1;
+
+text-align: center;
+
+padding: 25px 20px;
+
+width: 100%;
+
+
+}
+
+.site-footer p {
+margin: 8px 0;
+
+
+font-size: 16px;
+
+
+}
+
+.site-footer a {
+color: #3498db;
+
+
+text-decoration: none;
+
+font-weight: bold;
+
+
+}
+
+.site-footer a:hover {
+color: #2980b9;
+
+
+text-decoration: underline;
+
+
+}
+
+.whatsapp-icon {
+color: #25D366;
+}
+
+/* ==============================
+RESPONSIVIDADE
+============================== */
+
+@media (max-width: 650px) {
+
+
+.container {
+    padding: 15px;
+}
+
+.card {
+    padding: 22px;
+}
+
+.titulo {
+    align-items: flex-start;
+}
+
+.titulo h1 {
+    font-size: 21px;
+}
+
+.logo {
+    width: 55px;
+    height: 55px;
+
+    font-size: 16px;
+}
+
+.topo-tabela {
+    align-items: flex-start;
+
+    gap: 15px;
+
+    flex-direction: column;
+}
+
+.btn-secundario {
+    width: 100%;
+}
+
+
+}
